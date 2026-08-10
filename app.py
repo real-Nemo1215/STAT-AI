@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import openai
-from google import genai
 import os
 import plotly.express as px
 from dotenv import load_dotenv
@@ -100,26 +99,6 @@ st.markdown(f"""
         margin-top: 0.4rem;
     }}
     
-    /* AI Box - SOLID FLAT COLORS */
-    .ai-box {{
-        background-color: #ffffff;
-        border: 1px solid #a7f3d0;
-        border-left: 5px solid #047857;
-        border-radius: 12px;
-        padding: 1.75rem 2rem;
-        margin-top: 1.5rem;
-    }}
-
-    /* AI Result container — wraps native st.markdown output */
-    div[data-testid="stVerticalBlock"] > div.ai-result-wrapper {{
-        background-color: #ffffff;
-        border: 1px solid #a7f3d0;
-        border-left: 5px solid #047857;
-        border-radius: 12px;
-        padding: 1.75rem 2rem;
-        margin-top: 1.5rem;
-    }}
-    
     /* File Uploader Container Styling */
     [data-testid="stFileUploader"] {{
         border-radius: 12px;
@@ -185,10 +164,6 @@ st.markdown(f"""
         margin: 0 auto 0.75rem auto;
         text-align: center;
         letter-spacing: 0.025em;
-    }}
-    
-    .footer-divider {{
-        max-width: 0%;
     }}
     
     .footer-copyright {{
@@ -283,8 +258,6 @@ if uploaded_file is not None:
             </div>
             """, unsafe_allow_html=True)
             
-        st.markdown("<br>", unsafe_allow_html=True)
-        
         # --- TABBED DASHBOARD ---
         tab_explorer, tab_crosstab, tab_ai = st.tabs([
             "📊 Data Explorer", 
@@ -392,10 +365,8 @@ if uploaded_file is not None:
             st.markdown("<p style='font-size:2rem; font-weight:700; color:#1a1a1a; margin-bottom:0.1rem;'>Strategic AI Insights</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:1.1rem; color:#555; margin-top:0; margin-bottom:1rem;'>Generate a detailed survey analysis and targeted NGO intervention plan based on the uploaded data.</p>", unsafe_allow_html=True)
             
-            # Fetch server keys
-            server_groq_key = get_secret("GROQ_API_KEY")
-            
-            active_key = server_groq_key
+            # Fetch server API key
+            active_key = get_secret("GROQ_API_KEY")
             
             if st.button("Generate AI Insights Report"):
                 if not active_key:

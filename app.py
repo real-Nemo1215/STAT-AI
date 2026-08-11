@@ -213,7 +213,7 @@ st.markdown(f"""
 st.markdown("""
 <div class="hero-banner">
     <div class="hero-title">AI-Powered Data Analysis for NGOs</div>
-    <div class="hero-subtitle">Upload survey data from field studies or Google Forms to instantly surface key community bottlenecks, cross-analyzed trends, and strategic intervention plans.</div>
+    <div class="hero-subtitle">Upload survey data to instantly identify key community issues, trends, and strategic intervention plans.</div>
 </div>
 """, unsafe_allow_html=True)
 

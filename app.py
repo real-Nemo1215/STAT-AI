@@ -365,15 +365,44 @@ if uploaded_file is not None:
             st.markdown("<p style='font-size:2rem; font-weight:700; color:#1a1a1a; margin-bottom:0.1rem;'>Strategic AI Insights</p>", unsafe_allow_html=True)
             st.markdown("<p style='font-size:1.1rem; color:#555; margin-top:0; margin-bottom:1rem;'>Generate a detailed survey analysis and targeted NGO intervention plan based on the uploaded data.</p>", unsafe_allow_html=True)
             
-            # Fetch server API key
-            active_key = get_secret("GROQ_API_KEY")
+            # --- IMPORTANT NOTICE CALLOUT ---
+            st.markdown("""
+            <div style="background-color: #ecfdf5; border-left: 5px solid red; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem;">
+                <h4 style="margin: 0 0 0.5rem 0; color: #064e3b; font-weight: 700; font-size: 1.5rem;">IMPORTANT: API Key Limits</h4>
+                <p style="margin: 0 0 0.5rem 0; color: #047857; font-size: 1rem; line-height: 1.5;">
+                    The application runs using a shared default API key to generate AI insights. If the key hits its request limit, you will see a <b>429 Rate-Limit Error</b>.
+                </p>
+                <p style="margin: 0; color: #064e3b; font-size: 1rem; line-height: 1.5;">
+                    <b>When should you insert your own API key?</b><br>
+                    • Insert your personal key if you hit a <i>429 Rate-Limit Error</i> while generating the AI analysis.<br>
+                    • Insert your key if you want guaranteed, uninterrupted analysis for high-volume work.<br>
+                    You can get a free Groq API key at <a href="https://console.groq.com/" target="_blank" style="color: #047857; text-decoration: underline; font-weight: 600;">console.groq.com</a> and paste it below.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Custom API Key Input
+            user_api_key = st.text_input(
+                "🔑 Enter Your Personal Groq API Key (Optional):",
+                type="password",
+                placeholder="gsk_...",
+                help="Leave blank to use the default system key. Enter your key here to bypass 429 rate limits."
+            )
+
+            # Fetch keys & resolve active key
+            default_key = get_secret("GROQ_API_KEY")
+            user_key_clean = user_api_key.strip() if user_api_key else ""
+            default_key_clean = default_key.strip() if default_key else ""
+            
+            active_key = user_key_clean if user_key_clean else default_key_clean
+            using_custom_key = bool(user_key_clean)
             
             if st.button("Generate AI Insights Report"):
                 if not active_key:
-                    st.error("⚠️ No active API Key found on server. Please configure your `.env` file or environment variables.")
+                    st.error("⚠️ No API Key found. Please enter your personal Groq API key above to generate the report.")
                 else:
                     with st.spinner("Processing field data & generating AI briefing..."):
-                        clean_key = active_key.strip()
+                        clean_key = active_key
                         
                         # Build summary
                         col_summaries = []
@@ -401,6 +430,7 @@ Please structure your output into these 3 sections:
 """
                         ai_insights = None
                         error_detail = None
+                        is_rate_limit = False
                         
                         # 1. Groq Route (gsk_)
                         if clean_key.startswith("gsk_"):
@@ -415,18 +445,32 @@ Please structure your output into these 3 sections:
                                         ai_insights = res.choices[0].message.content
                                         break
                                     except Exception as err:
-                                        error_detail = str(err)
+                                        err_str = str(err)
+                                        error_detail = err_str
+                                        if "429" in err_str or "rate_limit" in err_str.lower() or "rate limit" in err_str.lower() or "quota" in err_str.lower():
+                                            is_rate_limit = True
                             except Exception as e:
-                                error_detail = str(e)
+                                err_str = str(e)
+                                error_detail = err_str
+                                if "429" in err_str or "rate_limit" in err_str.lower() or "rate limit" in err_str.lower() or "quota" in err_str.lower():
+                                    is_rate_limit = True
+                        else:
+                            error_detail = "Invalid API key format. Groq API keys must start with 'gsk_'."
                         
                         if ai_insights:
-                            st.success("AI Analysis Generated Successfully!")
+                            key_notice = " (Using Personal API Key)" if using_custom_key else " (Using Default API Key)"
+                            st.success("AI Analysis Generated Successfully!" + key_notice)
                             st.divider()
                             st.markdown(ai_insights)
                             st.divider()
                         else:
                             st.error("❌ Analysis generation failed.")
-                            if error_detail:
+                            if is_rate_limit:
+                                st.error(
+                                    "🛑 **429 Rate-Limit Error:** The API key hit its request/quota limit.\n\n"
+                                    "👉 **Action Required:** Please paste your personal Groq API key into the input field above (`🔑 Enter Your Personal Groq API Key`) and click **Generate AI Insights Report** again."
+                                )
+                            elif error_detail:
                                 st.warning(f"Error Details: {error_detail}")
 
     except Exception as e:

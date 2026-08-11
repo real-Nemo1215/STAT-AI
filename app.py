@@ -4,6 +4,7 @@ import openai
 import os
 import plotly.express as px
 from dotenv import load_dotenv
+import textwrap
 
 # Load environment variables from .env file if present
 load_dotenv()
@@ -205,6 +206,27 @@ st.markdown(f"""
     div[data-testid="stRadio"] [data-testid="stMarkdownContainer"] p,
     div[data-testid="stRadio"] span {{
         font-size: 1.05rem !important;
+    }}
+
+    /* Expander / Guidance Dropdown Styling */
+    div[data-testid="stExpander"] {{
+        background-color: #ffffff;
+        border: 1px solid #a7f3d0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }}
+    
+    div[data-testid="stExpander"] summary {{
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        color: #064e3b !important;
+        padding: 0.75rem 1rem !important;
+    }}
+
+    div[data-testid="stExpander"] summary:hover {{
+        color: #047857 !important;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -478,6 +500,66 @@ Please structure your output into these 3 sections:
 
 else:
     st.error("Please upload a survey CSV file above to launch your interactive dashboard and AI insights.")
+
+# --- GUIDANCE SECTION ---
+guidance_html = """<div style="padding: 0.5rem 0.25rem;">
+<h3 style="color: #064e3b; font-weight: 700; margin-top: 0; font-size: 1.35rem; margin-bottom: 1rem;">
+How to Arrange & Prepare Your CSV Data
+</h3>
+<div style="background-color: #ecfdf5; border-left: 5px solid #047857; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem;">
+<h4 style="margin: 0 0 0.4rem 0; color: #064e3b; font-weight: 700; font-size: 1.1rem;">
+1. First row = Questions, From row 2 and onwards = Responses
+</h4>
+<p style="margin: 0; color: #047857; font-size: 0.98rem; line-height: 1.5;">
+When you export from Google Forms, this is the default. The first row must be the column headers (the questions), and every row below it must be one person's set of answers.
+</p>
+</div>
+<div style="background-color: #fef2f2; border-left: 5px solid #ef4444; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem;">
+<h4 style="margin: 0 0 0.4rem 0; color: #991b1b; font-weight: 700; font-size: 1.1rem;">
+2. NO Open-Ended Text Answers
+</h4>
+
+<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+<div style="background-color: #ffffff; border: 1px solid #fca5a5; padding: 0.85rem 1rem; border-radius: 8px;">
+<span style="background-color: #ef4444; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.03em;">BAD</span>
+<p style="margin: 0.4rem 0 0 0; color: #374151; font-size: 0.95rem; line-height: 1.45;">
+If a question is <i>"What is your biggest struggle?"</i>, and people type: <i>"money"</i>, <i>"I need money for school"</i>, <i>"poverty"</i>, the bar chart will have 50 tiny bars, and the AI will get confused.
+</p>
+</div>
+<div style="background-color: #ffffff; border: 1px solid #6ee7b7; padding: 0.85rem 1rem; border-radius: 8px;">
+<span style="background-color: #10b981; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.03em;">GOOD</span>
+<p style="margin: 0.4rem 0 0 0; color: #374151; font-size: 0.95rem; line-height: 1.45;"> If the question is <i>"What is your biggest struggle?"</i> with multiple-choice options like "Food", "Education", "Healthcare", the app will group them perfectly into clean bars.
+</p>
+</div>
+</div>
+</div>
+<div style="background-color: #f0fdf4; border: 1px solid #a7f3d0; padding: 1.25rem; border-radius: 10px;">
+<h4 style="margin: 0 0 0.5rem 0; color: #064e3b; font-weight: 700; font-size: 1.1rem;">
+How to design your Google Form to get the perfect CSV:
+</h4>
+<p style="margin: 0 0 0.85rem 0; color: #047857; font-size: 0.98rem; line-height: 1.5;">
+To produce beautiful charts and smart AI insights, design your Google Form with only these types of questions:
+</p>
+<div style="margin-bottom: 1rem;">
+<p style="margin: 0 0 0.4rem 0; font-weight: 700; color: #064e3b; font-size: 0.98rem;">Recommended Question Types:</p>
+<ul style="margin: 0; padding-left: 1.25rem; color: #047857; line-height: 1.6; font-size: 0.95rem;">
+<li><b>Multiple Choice</b> (e.g. Yes / No)</li>
+<li><b>Dropdowns</b> (e.g. Age 5-7, 8-9, 10-12)</li>
+<li><b>Checkboxes</b> (e.g. Select all that apply)</li>
+</ul>
+</div>
+<div>
+<p style="margin: 0 0 0.4rem 0; font-weight: 700; color: #991b1b; font-size: 0.98rem;">Avoid these question types:</p>
+<ul style="margin: 0; padding-left: 1.25rem; color: #b91c1c; line-height: 1.6; font-size: 0.95rem;">
+<li><b>"Short answer"</b> (e.g. asking them to type their name)</li>
+<li><b>"Paragraph"</b> (e.g. asking them to explain their feelings)</li>
+</ul>
+</div>
+</div>
+</div>"""
+
+with st.expander("Guidance", expanded=False):
+    st.markdown(guidance_html, unsafe_allow_html=True)
 
 # --- FOOTER ---
 st.markdown("""

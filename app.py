@@ -439,16 +439,36 @@ Key Response Distributions:
 """ + "\n".join(col_summaries)
                         
                         prompt = f"""
-You are a senior humanitarian data analyst working for an international non-governmental organization (NGO).
-Analyze the following community assessment survey data summary and write a clear, professional Executive Briefing Report formatted in Markdown.
+You are a Senior Humanitarian Data Analyst and Field Operations Strategist for an international NGO. 
+You specialize in optimizing resource allocation and designing high-impact, low-cost interventions in under-resourced communities (specifically urban slums in developing nations).
 
-Data Summary:
+Analyze the following community assessment survey data summary. Do not just repeat the numbers; synthesize them to find hidden correlations and systemic bottlenecks.
+
+Survey Data Summary:
 {data_summary}
 
-Please structure your output into these 3 sections:
-1. Strategic Summary & Key Insights: Highlight the 2 most critical systemic issues or community bottlenecks evident in the data.
-2. Impactful NGO Intervention: Propose 1 specific, high-leverage field intervention that an NGO can immediately launch to address these bottlenecks. Include key success metrics.
-3. Resource Managment Guidance: Provide 2 practical tips on how field teams should allocate resources.
+Based on your analysis, write a highly professional, actionable Executive Briefing Report in Markdown format. 
+
+You must strictly adhere to the following constraints:
+1. FEASIBILITY IS PARAMOUNT: Assume a very limited budget and a small team of volunteers. Do not propose building expensive infrastructure (like schools or computer labs). Focus on leveraging existing community assets (e.g., if they have smartphones, propose offline digital solutions; if they lack education, propose mentorship models).
+2. NO GENERIC FLUFF: Do not use phrases like "raise awareness," "partner with government," or "empower the community." Every suggestion must be a specific, tangible action.
+3. DATA-BACKED: Every insight must reference a specific data point or percentage from the provided summary.
+
+Structure your report using these exact Markdown headings:
+
+### 1. Strategic Summary & Key Insights
+- Synthesize the data to identify the 2 most critical, interconnected bottlenecks preventing community development. Explain *why* these are the priority based on the numbers.
+
+### 2. Impactful NGO Intervention
+- Propose ONE specific, high-leverage intervention that directly solves the primary bottleneck. 
+- Break it down into actionable steps: 
+  - **Target Demographic:** Who exactly is this for?
+  - **Core Mechanism:** How does it work using existing resources?
+  - **Implementation Steps:** 3 concrete steps to launch it within 30 days.
+
+### Resource Management Guidance
+- **Cost-Effective Allocation:** How can the NGO stretch its resources based on this data? (e.g., "Stop spending on X and redirect to Y").
+- **Potential Risk:** What is one major logistical risk of this intervention, and how can the field team proactively mitigate it?
 """
                         ai_insights = None
                         error_detail = None
